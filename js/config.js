@@ -1,6 +1,7 @@
 import {width, height} from './var.js';
-import {mainMenu} from './mainMenu.js';
-import {game} from './game.js';
+import {mainMenu} from './scene/mainMenu.js';
+import {game} from './scene/game.js';
+import {background} from './scene/background.js';
 
 var config = {
     type: Phaser.AUTO,
@@ -12,7 +13,7 @@ var config = {
         height: height
     },
     backgroundColor: '#000000',
-    scene: [ mainMenu, game ]
+    scene: [ background, mainMenu, game ]
 };
 
 export {config}; 
