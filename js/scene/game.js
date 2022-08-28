@@ -21,9 +21,12 @@ var game = Phaser.Class({
         function ()
         {
             this.load.image('desk', 'img/desk.png');
-            this.load.image('boy', 'img/girl.png');
-            this.load.image('identity', 'img/ktp.png');
+            this.load.image('girl', 'img/girl.png');
+            this.load.image('boy', 'img/boy.png');
+            this.load.image('identity', 'img/identity.png');
             this.load.image('boardingpass', 'img/ktp.png');
+            this.load.image('boardingpassleft', 'img/boardingPassLeft.png');
+            this.load.image('boardingpassright', 'img/boardingPassRight.png');
             this.load.image('passengersRight', 'img/passengersRight.png');
             this.load.image('passengersWrong', 'img/passengersWrong.png');
             this.load.image('exit', 'img/exit.png');

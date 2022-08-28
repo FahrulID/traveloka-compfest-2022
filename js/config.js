@@ -12,6 +12,14 @@ var config = {
         width: width,
         height: height
     },
+    render: {
+        batchSize: 1024,
+        maxTextures: 15
+    },
+    fps: {
+        target: 60,
+        forceSetTimeOut: true
+    },
     backgroundColor: '#000000',
     scene: [ background, mainMenu, game ]
 };

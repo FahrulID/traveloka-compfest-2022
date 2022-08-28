@@ -17,7 +17,7 @@ class Passenger extends Phaser.GameObjects.Sprite
     _identity;
     _boardingPass;
 
-    // Modal
+    // Modal Groups
     _identityModal;
     _boardingPassModal;
 
@@ -29,11 +29,27 @@ class Passenger extends Phaser.GameObjects.Sprite
 		super(scene, -200, 875, 'Passenger')
 
         this._scene = scene;
+        
+        this.randomizePassenger();
 
-        this.setTexture('boy');
+        this.setTexture(this._avatar);
 
         this.scene.add.existing(this);
 	}
+
+    randomizePassenger()
+    {
+        this._avatar = "girl"
+
+        if(Math.random() < 0.75)
+            this._identityAvatar = this._avatar
+        else 
+            this._identityAvatar = "boy"
+
+        // random name
+
+        // random destination
+    }
 
     show()
     {
@@ -81,21 +97,20 @@ class Passenger extends Phaser.GameObjects.Sprite
     identitySlideIn()
     {
         const t = this
-        this._identity = this._scene.add.sprite(350, 1080, "identity")
-        this._identity.setScale(.3)
+        
+        this._identity = this._scene.add.container(350, 1080)
+        let bg = this._scene.add.rectangle(-25, 0, 46.875, 46.875, 0xffffff)
+        let identityCard = this._scene.add.sprite(0, 0, "identity")
+        let avatar = this._scene.add.sprite(-25, 0, this._identityAvatar)
 
-        this._identity.setInteractive();
+        avatar.setScale(.0875)
+        identityCard.setScale(.15)
 
-        this._identity.on('pointerdown', function (pointer) {
-            
-        });
-    
-        this._identity.on('pointerout', function (pointer) {
+        this._identity.add([bg, avatar, identityCard])
 
+        identityCard.setInteractive();
     
-        });
-    
-        this._identity.on('pointerup', function (pointer) {
+        identityCard.on('pointerup', function (pointer) {
             this.clearTint();
             if(t._identityModal == null)
                 t.showIdentityModal()
@@ -131,22 +146,25 @@ class Passenger extends Phaser.GameObjects.Sprite
     boardingPassSlideIn()
     {
         const t = this
-        this._boardingPass = this._scene.add.sprite(350, 1080, "boardingpass")
-        this._boardingPass.setScale(.3)
+        this._boardingPass = this._scene.add.container(350, 1080)
 
-        this._boardingPass.setInteractive();
+        let boardingpassleft = this._scene.add.sprite(-25, 0, "boardingpassleft")
+        let boardingpassright = this._scene.add.sprite(50, 0, "boardingpassright")
 
-        this._boardingPass.on('pointerdown', function (pointer) {
-            
+        boardingpassleft.setScale(.1) // .48 from 200dpi to 96dpi, .28 from .48/2
+        boardingpassright.setScale(.1)
+
+        this._boardingPass.add([boardingpassleft, boardingpassright])
+
+        boardingpassleft.setInteractive();
+        boardingpassright.setInteractive();
+    
+        boardingpassleft.on('pointerup', function (pointer) {
+            if(t._boardingPassModal == null)
+                t.showBoardingPassModal()
         });
     
-        this._boardingPass.on('pointerout', function (pointer) {
-
-    
-        });
-    
-        this._boardingPass.on('pointerup', function (pointer) {
-            this.clearTint();
+        boardingpassright.on('pointerup', function (pointer) {
             if(t._boardingPassModal == null)
                 t.showBoardingPassModal()
         });
@@ -194,12 +212,21 @@ class Passenger extends Phaser.GameObjects.Sprite
     {
         const t = this
         this.createOverlay()
-        this._identityModal = this._scene.add.sprite(width/2, height/2, "identity")
+        
+        this._identityModal = this._scene.add.container(width/2, height/2)
+        let bg = this._scene.add.rectangle(-80, 0, 150, 150, 0xffffff)
+        let identityCard = this._scene.add.sprite(0, 0, "identity")
+        let avatar = this._scene.add.sprite(-80, 0, this._identityAvatar)
+
+        avatar.setScale(.28)
+        identityCard.setScale(.48)
+
+        this._identityModal.add([bg, avatar, identityCard])
         
         this._scene.tweens.add({
             targets: t._identityModal,
-            scale: 2,
-            ease: Phaser.Math.Easing.Sine.in,
+            scaleX: { value: 2, ease: 'Quad.easeInOut' },
+            scaleY: { value: 2, ease: 'Quad.easeInOut' },
             duration: 200,
             onComplete: () => {
                 t._scene.input.on('pointerdown', () =>
@@ -216,7 +243,7 @@ class Passenger extends Phaser.GameObjects.Sprite
         this._scene.tweens.add({
             targets: t._identityModal,
             scale: 1,
-            ease: Phaser.Math.Easing.Sine.in,
+            ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 200,
             onComplete: () => {
                 t._identityModal.destroy(true)
@@ -231,12 +258,23 @@ class Passenger extends Phaser.GameObjects.Sprite
     {
         const t = this
         this.createOverlay()
-        this._boardingPassModal = this._scene.add.sprite(width/2, height/2, "identity")
+        
+        this._boardingPassModal = this._scene.add.container(width/2, height/2)
+
+        let boardingpassleft = this._scene.add.sprite(325 - width/2, 0, "boardingpassleft")
+        let boardingpassright = this._scene.add.sprite(width - 260 - width/2, 0, "boardingpassright")
+
+        boardingpassleft.setScale(.24) // .48 from 200dpi to 96dpi, .28 from .48/2
+        boardingpassright.setScale(.24)
+
+        this._boardingPassModal.add([boardingpassleft, boardingpassright])
+
+        // console.log(this._boardingPassModal)
         
         this._scene.tweens.add({
-            targets: t._boardingPassModal,
-            scale: 2,
-            ease: Phaser.Math.Easing.Sine.in,
+            targets: t._boardingPassModal, 
+            scaleX: { value: 2, ease: 'Quad.easeInOut' },
+            scaleY: { value: 2, ease: 'Quad.easeInOut' },
             duration: 200,
             onComplete: () => {
                 t._scene.input.on('pointerdown', () =>
@@ -253,7 +291,7 @@ class Passenger extends Phaser.GameObjects.Sprite
         this._scene.tweens.add({
             targets: t._boardingPassModal,
             scale: 1,
-            ease: Phaser.Math.Easing.Sine.in,
+            ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 200,
             onComplete: () => {
                 t._boardingPassModal.destroy(true)
