@@ -21,13 +21,77 @@ var gamePause = Phaser.Class({
     preload: 
         function ()
         {
-            
+            this.load.image('gamePause', 'img/gamePause.png');
+            this.load.image('home', 'img/home.png');
         },
 
     create: 
         function ()
         {    
             const t = this;
+
+            this.createOverlay = () =>
+            {
+                this._overlay = this.add.rectangle(width/2, height/2, width, height, 0x000000, .7)
+                this._overlay.setInteractive()
+
+                this._pause = this.add.sprite(width/2, height/2 - 100, 'gamePause')
+
+                
+    
+                this._overlay.on('pointerup', function (pointer) {
+                    t.scene.stop("gamePause").resume('game');
+                });
+            }
+
+            this.destroyOverlay = () =>
+            {
+                this._overlay.destroy(true)
+                this._overlay = null
+            }
+
+            this.createOverlay()
+            var home = this.add.image(width/2, height + 270, 'home');
+
+            home.on('pointerdown', function (pointer) {
+                
+                t.tweens.add({
+                    targets: home,
+                    scale: .9,
+                    duration: 100
+                });
+        
+            });
+        
+            home.on('pointerout', function (pointer) {
+
+                t.tweens.add({
+                    targets: home,
+                    scale: 1,
+                    duration: 100
+                });
+        
+            });
+        
+            home.on('pointerup', function (pointer) {
+                this.clearTint();
+
+                t.scene.stop()
+
+                eventsCenter.emit('goToMainMenu', true)
+            });
+
+            home.setInteractive()
+
+            this.tweens.add({
+                targets: home,
+                y: height/2 + 100,
+                duration: 200,
+                ease: Phaser.Math.Easing.Sine.in,
+                onComplete: () => {
+
+                }
+            });
         },
 
     update:

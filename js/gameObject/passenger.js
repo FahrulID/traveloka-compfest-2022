@@ -1,9 +1,10 @@
 import {width, height} from '../var.js';
+import eventsCenter from '../eventsCenter.js'
 
 class Passenger extends Phaser.GameObjects.Sprite
 {
     _identityName;
-    _ticketName;
+    _boardingPassName;
 
     _identityAvatar;
     _avatar;
@@ -23,6 +24,8 @@ class Passenger extends Phaser.GameObjects.Sprite
 
     _overlay;
 
+    _reject
+
 
 	constructor(scene)
 	{
@@ -32,22 +35,101 @@ class Passenger extends Phaser.GameObjects.Sprite
         
         this.randomizePassenger();
 
+        this._reject = this._scene.add.rectangle(385, 1010, 150, 100, 0xffffff)
+        this._reject.setAlpha(0)
+
         this.setTexture(this._avatar);
 
         this.scene.add.existing(this);
+
+        eventsCenter.on('goToMainMenu', function(data)
+        {
+            if(data)
+            {    
+                if(this._identityModal != null)
+                    this.hideIdentityModal()
+                if(this._boardingPassModal != null)
+                    this.hideBoardingPassModal()
+                if(this._reject != null)
+                    this._reject.destroy(true)
+            }
+
+            if(this._scan != null)
+                this._scan.stop()
+            
+            if(this._boardingPassAnim != null)
+                this._boardingPassAnim.stop()
+        }, this)
 	}
 
     randomizePassenger()
     {
-        this._avatar = "girl"
+        const avatarMale = [
+            "boy",
+            "male",
+            "grandpa"
+        ]
+        const avatarFemale = [
+            "girl",
+            "female",
+            "grandma"
+        ]
+
+        // random name
+        const firstNameMale = [
+            "Rangga",
+            "Kevin",
+            "Agus",
+            "Budi"
+        ]
+        const lastNameMale = [
+            "Putra",
+            "Santoso",
+            "Utama",
+            "Wijaya"
+        ]
+
+        const firstNameFemale = [
+            "Isyana",
+            "Ayu",
+            "Sri",
+            "Dewi"
+        ]
+
+        const lastNameFemale = [
+            "Lestari",
+            "Maharani",
+            "Putri",
+            "Agatha"
+        ]
+
+        let name;
+
+        if(Math.random() < 0.5)
+        {
+            // Male
+            this._avatar = avatarMale[Math.floor(Math.random()*avatarMale.length)];
+            name = firstNameMale[Math.floor(Math.random()*firstNameMale.length)] + " " + lastNameMale[Math.floor(Math.random()*lastNameMale.length)];
+        }
+        else 
+        {
+            // Female
+            this._avatar = avatarFemale[Math.floor(Math.random()*avatarFemale.length)];
+            name = firstNameFemale[Math.floor(Math.random()*firstNameFemale.length)] + " " + lastNameFemale[Math.floor(Math.random()*lastNameFemale.length)];
+        }
 
         if(Math.random() < 0.75)
             this._identityAvatar = this._avatar
         else 
-            this._identityAvatar = "boy"
+            this._identityAvatar = (Math.random() < 0.5) ? avatarMale[Math.floor(Math.random()*avatarMale.length)] : avatarFemale[Math.floor(Math.random()*avatarFemale.length)];
 
-        // random name
+        this._identityName = name
 
+        if(Math.random() < 0.75)
+            this._boardingPassName = name
+        else {
+            this._boardingPassName = (Math.random() < 0.5) ? firstNameMale[Math.floor(Math.random()*firstNameMale.length)] + " " + lastNameMale[Math.floor(Math.random()*lastNameMale.length)] : name = firstNameFemale[Math.floor(Math.random()*firstNameFemale.length)] + " " + lastNameFemale[Math.floor(Math.random()*lastNameFemale.length)];
+        }
         // random destination
     }
 
@@ -69,6 +151,34 @@ class Passenger extends Phaser.GameObjects.Sprite
             this._boardingPass.visible = false
     }
 
+    accepted()
+    {
+        const t = this
+        t.identitySlideOut()
+        t.boardingPassSlideOut()
+        
+        t._scene.time.addEvent({ 
+            delay: 200, 
+            callback: function() {
+                t._scene.tweens.add({
+                    targets: t,
+                    x: width + 200,
+                    ease: Phaser.Math.Easing.Sine.in,
+                    duration: 1750,
+                    onStart: (tween, target) => {
+                    },
+                    onUpdate: (tween, target) => {
+                        target.y -= 3*Math.sin(Math.PI/2 * ((tween.progress * 12))) // Every 4 means 1 wave, 8 means 2 wave, 1.1 is amplitudo
+                    },
+                    onComplete: () => {
+                        t.isRight()
+                        // Change Passenger
+                    }
+                });
+            }, 
+        });
+    }
+
     getIn()
     {
         const t = this
@@ -85,47 +195,85 @@ class Passenger extends Phaser.GameObjects.Sprite
             onComplete: () => {
                 t.identitySlideIn()
                 t.boardingPassSlideIn()
+
+                if(!t._scene._gameover)
+                {  
+                    t._reject.setAlpha(1)
+                    t._reject.setInteractive()
+                    t._reject.on('pointerup', function (pointer) {
+                        t._reject.disableInteractive()
+                        t._reject.destroy(true)
+                        t.identitySlideOut()
+                        t.boardingPassSlideOut()
+
+                        
+                        t._scene.time.addEvent({ 
+                            delay: 200, 
+                            callback: function() {
+                                t.getOut()
+                            }, 
+                        });
+                    });
+                }
             }
         });
     }
 
     getOut()
     {
-        this.x = -200
+        const t = this
+        this._scene.tweens.add({
+            targets: t,
+            x: -200,
+            ease: Phaser.Math.Easing.Sine.in,
+            duration: 1750,
+            onStart: (tween, target) => {
+            },
+            onUpdate: (tween, target) => {
+                target.y -= 3*Math.sin(Math.PI/2 * ((tween.progress * 12))) // Every 4 means 1 wave, 8 means 2 wave, 1.1 is amplitudo
+            },
+            onComplete: () => {
+                t.isRight(false)
+                // Change Passenger
+            }
+        });
     }
 
     identitySlideIn()
     {
-        const t = this
+        if(this.visible)
+        {
+            const t = this
         
-        this._identity = this._scene.add.container(350, 1080)
-        let bg = this._scene.add.rectangle(-25, 0, 46.875, 46.875, 0xffffff)
-        let identityCard = this._scene.add.sprite(0, 0, "identity")
-        let avatar = this._scene.add.sprite(-25, 0, this._identityAvatar)
+            this._identity = this._scene.add.container(350, 1080)
+            let bg = this._scene.add.rectangle(-25, 0, 46.875, 46.875, 0xffffff)
+            let identityCard = this._scene.add.sprite(0, 0, "identity")
+            let avatar = this._scene.add.sprite(-25, 0, this._identityAvatar)
 
-        avatar.setScale(.0875)
-        identityCard.setScale(.15)
+            avatar.setScale(.0875)
+            identityCard.setScale(.15)
 
-        this._identity.add([bg, avatar, identityCard])
+            this._identity.add([bg, avatar, identityCard])
 
-        identityCard.setInteractive();
-    
-        identityCard.on('pointerup', function (pointer) {
-            this.clearTint();
-            if(t._identityModal == null)
-                t.showIdentityModal()
-        });
+            identityCard.setInteractive();
         
-        this._scene.tweens.add({
-            targets: t._identity,
-            x: 200,
-            y: 1140,
-            ease: Phaser.Math.Easing.Sine.in,
-            duration: 200,
-            onComplete: () => {
-                // t.identitySlideOut()
-            }
-        });
+            identityCard.on('pointerup', function (pointer) {
+                this.clearTint();
+                if(t._identityModal == null)
+                    t.showIdentityModal()
+            });
+            
+            this._scene.tweens.add({
+                targets: t._identity,
+                x: 200,
+                y: 1140,
+                ease: Phaser.Math.Easing.Sine.in,
+                duration: 200,
+                onComplete: () => {
+                    // t.identitySlideOut()
+                }
+            });
+        }
     }
 
     identitySlideOut()
@@ -138,47 +286,51 @@ class Passenger extends Phaser.GameObjects.Sprite
             ease: Phaser.Math.Easing.Sine.in,
             duration: 200,
             onComplete: () => {
-                t._identity.destroy(true)
+                if(t._identity != null)
+                    t._identity.destroy(true)
             }
         });
     }
 
     boardingPassSlideIn()
     {
-        const t = this
-        this._boardingPass = this._scene.add.container(350, 1080)
+        if(this.visible)
+        {
+            const t = this
+            this._boardingPass = this._scene.add.container(350, 1080)
 
-        let boardingpassleft = this._scene.add.sprite(-25, 0, "boardingpassleft")
-        let boardingpassright = this._scene.add.sprite(50, 0, "boardingpassright")
+            let boardingpassleft = this._scene.add.sprite(-25, 0, "boardingpassleft")
+            let boardingpassright = this._scene.add.sprite(50, 0, "boardingpassright")
 
-        boardingpassleft.setScale(.1) // .48 from 200dpi to 96dpi, .28 from .48/2
-        boardingpassright.setScale(.1)
+            boardingpassleft.setScale(.1) // .48 from 200dpi to 96dpi, .28 from .48/2
+            boardingpassright.setScale(.1)
 
-        this._boardingPass.add([boardingpassleft, boardingpassright])
+            this._boardingPass.add([boardingpassleft, boardingpassright])
 
-        boardingpassleft.setInteractive();
-        boardingpassright.setInteractive();
-    
-        boardingpassleft.on('pointerup', function (pointer) {
-            if(t._boardingPassModal == null)
-                t.showBoardingPassModal()
-        });
-    
-        boardingpassright.on('pointerup', function (pointer) {
-            if(t._boardingPassModal == null)
-                t.showBoardingPassModal()
-        });
+            boardingpassleft.setInteractive();
+            boardingpassright.setInteractive();
         
-        this._scene.tweens.add({
-            targets: t._boardingPass,
-            x: 550,
-            y: 1140,
-            ease: Phaser.Math.Easing.Sine.in,
-            duration: 200,
-            onComplete: () => {
-                // t.boardingPassSlideOut()
-            }
-        });
+            boardingpassleft.on('pointerup', function (pointer) {
+                if(t._boardingPassModal == null)
+                    t.showBoardingPassModal()
+            });
+        
+            boardingpassright.on('pointerup', function (pointer) {
+                if(t._boardingPassModal == null)
+                    t.showBoardingPassModal()
+            });
+            
+            this._scene.tweens.add({
+                targets: t._boardingPass,
+                x: 550,
+                y: 1140,
+                ease: Phaser.Math.Easing.Sine.in,
+                duration: 200,
+                onComplete: () => {
+                    // t.boardingPassSlideOut()
+                }
+            });
+        }
     }
 
     boardingPassSlideOut()
@@ -191,14 +343,15 @@ class Passenger extends Phaser.GameObjects.Sprite
             ease: Phaser.Math.Easing.Sine.in,
             duration: 200,
             onComplete: () => {
-                t._boardingPass.destroy(true)
+                if(t._boardingPass != null)
+                    t._boardingPass.destroy(true)
             }
         });
     }
 
     createOverlay()
     {
-        this._overlay = this._scene.add.rectangle(0, 0, width*2, height*2, 0x000000, .7)
+        this._overlay = this._scene.add.rectangle(width/2, height/2, width, height, 0x000000, .7)
         this._overlay.setInteractive()
     }
 
@@ -229,8 +382,10 @@ class Passenger extends Phaser.GameObjects.Sprite
             scaleY: { value: 2, ease: 'Quad.easeInOut' },
             duration: 200,
             onComplete: () => {
+                let name = this._scene.add.text(370, height/2 - 50, this._identityName, { font: '40px roboto, sans-serif', align: 'left'});
                 t._scene.input.on('pointerdown', () =>
                 {
+                    name.destroy(true)
                     t.hideIdentityModal()
                 })
             }
@@ -258,8 +413,30 @@ class Passenger extends Phaser.GameObjects.Sprite
     {
         const t = this
         this.createOverlay()
+
+        t.boardingScan = this._scene.add.rectangle(150, height/2 + 70, 250, 50, 0xffffff)
+        t.boardingScan2 = this._scene.add.rectangle(width - 130, height/2 + 70, 200, 50, 0xffffff)
+        t.boardingScan.setAlpha(0);
+
+        t.boardingScan.on('pointerup', () =>
+        {
+            t.boardingScan.disableInteractive()
+            t.boardingScan2.disableInteractive()
+            t.scan(225, height/2 + 150)
+        })
+        t.boardingScan2.setAlpha(0);
+
+        t.boardingScan2.on('pointerup', () =>
+        {
+            t.boardingScan.disableInteractive()
+            t.boardingScan2.disableInteractive()
+            t.scan(width - 70, height/2 + 150)
+        })
         
         this._boardingPassModal = this._scene.add.container(width/2, height/2)
+
+        t.boardingScan.setInteractive()
+        t.boardingScan2.setInteractive()
 
         let boardingpassleft = this._scene.add.sprite(325 - width/2, 0, "boardingpassleft")
         let boardingpassright = this._scene.add.sprite(width - 260 - width/2, 0, "boardingpassright")
@@ -277,7 +454,11 @@ class Passenger extends Phaser.GameObjects.Sprite
             scaleY: { value: 2, ease: 'Quad.easeInOut' },
             duration: 200,
             onComplete: () => {
-                t._scene.input.on('pointerdown', () =>
+                t.boardingScan.setAlpha(1);
+                t.boardingScan2.setAlpha(1);
+                t.firstname = this._scene.add.text(50, height/2 - 50, this._boardingPassName.split(' ')[0], { font: '40px roboto, sans-serif', align: 'left', color: '#3f3f4e'});
+                t.lastname = this._scene.add.text(50, height/2, this._boardingPassName.split(' ')[1], { font: '40px roboto, sans-serif', align: 'left', color: '#3f3f4e'});
+                t._overlay.on('pointerdown', () =>
                 {
                     t.hideBoardingPassModal()
                 })
@@ -288,7 +469,11 @@ class Passenger extends Phaser.GameObjects.Sprite
     hideBoardingPassModal()
     {
         const t = this
-        this._scene.tweens.add({
+        t.firstname.destroy(true)
+        t.lastname.destroy(true)
+        t.boardingScan.destroy(true)
+        t.boardingScan2.destroy(true)
+        this._boardingPassAnim = this._scene.tweens.add({
             targets: t._boardingPassModal,
             scale: 1,
             ease: Phaser.Math.Easing.Quadratic.InOut,
@@ -300,6 +485,72 @@ class Passenger extends Phaser.GameObjects.Sprite
                 t.destroyOverlay()
             }
         });
+    }
+
+    scan(x, y)
+    {
+        this._overlay.disableInteractive()
+        const t = this
+        let scanner = this._scene.add.sprite(width/2, height + 300, "scanner")
+        scanner.setScale(.5)
+
+        this._scan = this._scene.tweens.add({
+            targets: scanner,
+            x: x,
+            y: y,
+            ease: Phaser.Math.Easing.Quadratic.InOut,
+            duration: 1500,
+            onComplete: () => {
+                t._scene.time.addEvent({ 
+                    delay: 1000, 
+                    callback: function() {
+                        t._scene.tweens.add({
+                            targets: scanner,
+                            x: width/2,
+                            y: height + 300,
+                            ease: Phaser.Math.Easing.Quadratic.InOut,
+                            duration: 1000,
+                            onComplete: () => {
+                                t._reject.destroy(true)
+                                t.hideBoardingPassModal()
+                                t.accepted()
+                            }
+                        });
+                    }, 
+                });
+            }
+        });
+    }
+
+    isRight(letIn = true)
+    {
+        let nameRight = this._identityName == this._boardingPassName
+        let avatarRight = this._identityAvatar == this._avatar
+        if(letIn)
+        {
+
+            if(nameRight && avatarRight)
+            {
+                // Emit add passenger right
+                eventsCenter.emit('passengerPoint', true)
+                console.log("Accept benar")
+            } else {
+                // Emit add passenger wrong
+                eventsCenter.emit('passengerPoint', false)
+                console.log("Accept salah")
+            }
+        } else {
+            if(!nameRight || !avatarRight)
+            {
+                // Emit add passenger right
+                eventsCenter.emit('passengerPoint', true)
+                console.log("Reject benar")
+            } else {
+                // Emit add passenger wrong
+                eventsCenter.emit('passengerPoint', false)
+                console.log("Reject salah")
+            }
+        }
     }
 }
 

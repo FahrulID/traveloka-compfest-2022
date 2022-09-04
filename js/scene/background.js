@@ -55,7 +55,8 @@ var background = new Phaser.Class({
                         duration: 2000
                     });
 
-                    t.scene.stop("mainMenu").launch('game');
+                    t.scene.stop("mainMenu");
+                    t.scene.launch('game')
 
                     t.time.addEvent({ 
                         delay: 2000, 
@@ -67,7 +68,7 @@ var background = new Phaser.Class({
                 }
             }, this)
 
-            eventsCenter.on('exit', function(data)
+            eventsCenter.on('exit', function(data, scene)
             {
                 if(data)
                 {
@@ -90,7 +91,11 @@ var background = new Phaser.Class({
                         callback: function() {
                             t.awanUp = false
                             t.scene.stop("game").launch('mainMenu');
+                            scene.registry.destroy();
+                            eventsCenter.emit('stopGame', true, t)
                             eventsCenter.emit('exit', false)
+
+                            location.reload();
                         }, 
                     });
                 }

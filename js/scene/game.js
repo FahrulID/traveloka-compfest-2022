@@ -1,6 +1,6 @@
 import Passenger from '../gameObject/passenger.js';
 import eventsCenter from '../eventsCenter.js'
-import {width, height} from '../var.js';
+import {width, maxPassenger, timer} from '../var.js';
 
 var game = Phaser.Class({
 
@@ -22,15 +22,21 @@ var game = Phaser.Class({
         {
             this.load.image('desk', 'img/desk.png');
             this.load.image('girl', 'img/girl.png');
+            this.load.image('female', 'img/female.png');
+            this.load.image('grandma', 'img/grandma.png');
             this.load.image('boy', 'img/boy.png');
+            this.load.image('male', 'img/male.png');
+            this.load.image('grandpa', 'img/grandpa.png');
             this.load.image('identity', 'img/identity.png');
-            this.load.image('boardingpass', 'img/ktp.png');
             this.load.image('boardingpassleft', 'img/boardingPassLeft.png');
             this.load.image('boardingpassright', 'img/boardingPassRight.png');
             this.load.image('passengersRight', 'img/passengersRight.png');
             this.load.image('passengersWrong', 'img/passengersWrong.png');
             this.load.image('exit', 'img/exit.png');
             this.load.image('clock', 'img/clock.png');
+            this.load.image('scanner', 'img/scanner.png');
+
+            this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
         },
 
     create: 
@@ -39,12 +45,28 @@ var game = Phaser.Class({
             const t = this;
 
             this._time = 0;
-            this._timer = 60 * 1000; // 1 menit
+            this._timer = timer
+            this._gameover = false
+            this._maxPassenger = maxPassenger;
+            this._currentPassenger = 0
+            this._passengers = []
+
+            this._bgm = this.sound.add("bgm")
+            this._bgm.loop = true
+
+            if(!window._mute)
+                this._bgm.play()
+
+            console.log(this._bgm)
 
             this.started = false;
 
-            let passenger = new Passenger(this)
-            passenger.hide()
+            for(var x = 0; x < this._maxPassenger; x++)
+            {
+                let passenger = new Passenger(this)
+                this._passengers.push(passenger)
+                this._passengers[x].hide()
+            }
 
             var desk = this.add.sprite(width/2, 1960, 'desk');
 
@@ -77,33 +99,46 @@ var game = Phaser.Class({
                 });
     
                 this._exit.on('pointerup', function (pointer) {
-                    this.clearTint();
-
-                    t.started = false
-
-                    passenger.hide()
-
-                    t._passengersRightCounter.destroy(true)
-                    t._passengersWrongCounter.destroy(true)
-                    t._clockCounter.destroy(true)
-                
-                    t.tweens.add({
-                        targets: [ t._passengersRight, t._passengersWrong, t._exit, t._clock ],
-                        y: -175,
-                        ease: Phaser.Math.Easing.Sine.in,
-                        duration: 500,
-                    });
-                    
-                    t.tweens.add({
-                        targets: desk,
-                        y: 1960,
-                        duration: 2000,
-                        onComplete: () => {
-
-                        }
-                    });
-                    eventsCenter.emit('exit', true)
+                    t.scene.pause('game').launch('gamePause')
                 });
+
+                eventsCenter.on('goToMainMenu', function(data)
+                {
+                    if(data)
+                    {    
+                        t._gameover = true;
+                        t.started = false
+
+                        t.scene.resume();
+
+                        t._passengers.forEach((passenger) => {
+                            passenger.hide()
+                        })
+    
+                        t._passengersRightCounter.destroy(true)
+                        t._passengersWrongCounter.destroy(true)
+                        t._clockCounter.destroy(true)
+                    
+                        t.tweens.add({
+                            targets: [ t._passengersRight, t._passengersWrong, t._exit, t._clock ],
+                            y: -175,
+                            ease: Phaser.Math.Easing.Sine.in,
+                            duration: 500,
+                        });
+                        
+                        t.tweens.add({
+                            targets: desk,
+                            y: 1960,
+                            duration: 2000,
+                            onComplete: () => {
+    
+                            }
+                        });
+                        
+                        eventsCenter.emit('goToMainMenu', false)
+                        eventsCenter.emit('exit', true, this)
+                    }
+                }, this)
                 
                 this.tweens.add({
                     targets: [ this._passengersRight, this._passengersWrong, this._exit ],
@@ -142,33 +177,84 @@ var game = Phaser.Class({
                 y: 1000,
                 duration: 2000,
                 onComplete: () => {
-                    passenger.show()
-                    passenger.getIn()
+                    t._passengers[t._currentPassenger].show()
+                    t._passengers[t._currentPassenger].getIn()
 
                     this.showScore()
                 }
             });
+
+            eventsCenter.on('gameOver', function(data)
+            {
+                this._gameover = true
+            }, this)
+
+            eventsCenter.on('passengerPoint', function(right)
+            {
+                if(!this._gameover)
+                {
+                    if(right)
+                    {
+                        if(t._passengersRightCounter != null)
+                            t._passengersRightCounter.text = parseInt(t._passengersRightCounter.text) + 1
+                    } else {
+                        if(t._passengersWrongCounter != null)
+                            t._passengersWrongCounter.text = parseInt(t._passengersWrongCounter.text) + 1
+                    }
+    
+                    t._passengers[t._currentPassenger].destroy(true)
+                    t._currentPassenger++
+                    t._passengers[t._currentPassenger].show()
+                    t._passengers[t._currentPassenger].getIn()
+                }
+
+            }, this)
+
+            eventsCenter.on('stopGame', function(data, scene)
+            {
+                if(data)
+                {
+                    t._bgm.stop()
+                    t.registry.destroy();
+                    t.events.off();
+
+                    eventsCenter.emit('stopGame', false, scene)
+                }
+            }, this)
         },
 
     update:
         function(time, delta) 
         {
-            if(this.started)
+            const t = this
+            if(!this._gameover)
             {
-                this._time += delta;
-                while (this._time > 1000) {
-                    this._time -= 1000;
-                    this._timer -= 1000;
-                }
-
-                // Show clock
-                let minutes = String(Math.floor(this._timer / 60000)).padStart(2, '0').split('')
-                let seconds = String(Math.floor(this._timer % 60000 / 1000)).padStart(2, '0').split('')
-                this._clockCounter.text = minutes[0] + ' ' + minutes[1] + ' : ' + seconds[0] + ' ' + seconds[1];
-
                 if(this._timer <= 0)
                 {
-                    this.started = false;
+                    //GameOver
+                    this._gameover = true;
+                    this.scene.pause();
+                    this.scene.launch('gameOver', {
+                        score: (parseInt(t._passengersRightCounter.text) * 10) - (parseInt(t._passengersWrongCounter.text) * 10)
+                    });
+                }
+                if(this.started)
+                {
+                    this._time += delta;
+                    while (this._time > 1000) {
+                        this._time -= 1000;
+                        this._timer -= 1000;
+                    }
+    
+                    // Show clock
+                    let minutes = String(Math.floor(this._timer / 60000)).padStart(2, '0').split('')
+                    let seconds = String(Math.floor(this._timer % 60000 / 1000)).padStart(2, '0').split('')
+                    this._clockCounter.text = minutes[0] + ' ' + minutes[1] + ' : ' + seconds[0] + ' ' + seconds[1];
+    
+                    if(this._timer <= 0)
+                    {
+                        this.started = false;
+                    }
                 }
             }
         }
