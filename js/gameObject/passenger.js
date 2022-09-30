@@ -80,31 +80,57 @@ class Passenger extends Phaser.GameObjects.Sprite
             "Rangga",
             "Kevin",
             "Agus",
-            "Budi"
+            "Budi",
+            "Agung",
+            "Dimas",
+            "Bagus",
+            "Muhammad",
+            "Ahmad",
+            "Andi"
         ]
         const lastNameMale = [
             "Putra",
             "Santoso",
             "Utama",
-            "Wijaya"
+            "Wijaya",
+            "Setiawan",
+            "Hidayat",
+            "Saputra",
+            "Kurniawan",
+            "Susanto",
+            "Arifin",
+            "Widodo"
         ]
 
         const firstNameFemale = [
             "Isyana",
             "Ayu",
             "Sri",
-            "Dewi"
+            "Dewi",
+            "Siti",
+            "Nur",
+            "Maria",
+            "Dian",
+            "Ratna",
+            "Fitri"
         ]
 
         const lastNameFemale = [
             "Lestari",
             "Maharani",
             "Putri",
-            "Agatha"
+            "Agatha",
+            "Susanti",
+            "Wati",
+            "Sari",
+            "Wulandari",
+            "Yanti",
+            "Suryani"
         ]
 
         let name;
 
+        // 50% male or female
         if(Math.random() < 0.5)
         {
             // Male
@@ -118,6 +144,7 @@ class Passenger extends Phaser.GameObjects.Sprite
             name = firstNameFemale[Math.floor(Math.random()*firstNameFemale.length)] + " " + lastNameFemale[Math.floor(Math.random()*lastNameFemale.length)];
         }
 
+        // 75% same photo
         if(Math.random() < 0.75)
             this._identityAvatar = this._avatar
         else 
@@ -125,6 +152,7 @@ class Passenger extends Phaser.GameObjects.Sprite
 
         this._identityName = name
 
+        // 75% same name
         if(Math.random() < 0.75)
             this._boardingPassName = name
         else {
@@ -357,8 +385,11 @@ class Passenger extends Phaser.GameObjects.Sprite
 
     destroyOverlay()
     {
-        this._overlay.destroy(true)
-        this._overlay = null
+        if(this._overlay != null)
+        {
+            this._overlay.destroy(true)
+            this._overlay = null
+        }
     }
 
     showIdentityModal()
@@ -401,7 +432,8 @@ class Passenger extends Phaser.GameObjects.Sprite
             ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 200,
             onComplete: () => {
-                t._identityModal.destroy(true)
+                if(t._identityModal != null)
+                    t._identityModal.destroy(true)
                 t._identityModal = null
                 t._scene.input.off('pointerdown')
                 t.destroyOverlay()
@@ -469,17 +501,22 @@ class Passenger extends Phaser.GameObjects.Sprite
     hideBoardingPassModal()
     {
         const t = this
-        t.firstname.destroy(true)
-        t.lastname.destroy(true)
-        t.boardingScan.destroy(true)
-        t.boardingScan2.destroy(true)
+        if(t.firstname != null)
+            t.firstname.destroy(true)
+        if(t.lastname != null)
+            t.lastname.destroy(true)
+        if(t.boardingScan != null)
+            t.boardingScan.destroy(true)
+        if(t.boardingScan2 != null)
+            t.boardingScan2.destroy(true)
         this._boardingPassAnim = this._scene.tweens.add({
             targets: t._boardingPassModal,
             scale: 1,
             ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 200,
             onComplete: () => {
-                t._boardingPassModal.destroy(true)
+                if(t._boardingPassModal != null)
+                    t._boardingPassModal.destroy(true)
                 t._boardingPassModal = null
                 t._scene.input.off('pointerdown')
                 t.destroyOverlay()
@@ -511,7 +548,8 @@ class Passenger extends Phaser.GameObjects.Sprite
                             ease: Phaser.Math.Easing.Quadratic.InOut,
                             duration: 1000,
                             onComplete: () => {
-                                t._reject.destroy(true)
+                                if(t._reject != null)
+                                    t._reject.destroy(true)
                                 t.hideBoardingPassModal()
                                 t.accepted()
                             }

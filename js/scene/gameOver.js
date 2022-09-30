@@ -44,7 +44,8 @@ var gameOver = Phaser.Class({
 
             this.destroyOverlay = () =>
             {
-                this._overlay.destroy(true)
+                if(this._overlay != null)
+                    this._overlay.destroy(true)
                 this._overlay = null
             }
 

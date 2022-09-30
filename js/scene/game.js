@@ -57,8 +57,6 @@ var game = Phaser.Class({
             if(!window._mute)
                 this._bgm.play()
 
-            console.log(this._bgm)
-
             this.started = false;
 
             for(var x = 0; x < this._maxPassenger; x++)
@@ -115,9 +113,12 @@ var game = Phaser.Class({
                             passenger.hide()
                         })
     
-                        t._passengersRightCounter.destroy(true)
-                        t._passengersWrongCounter.destroy(true)
-                        t._clockCounter.destroy(true)
+                        if(t._passengersRightCounter != null)
+                            t._passengersRightCounter.destroy(true)
+                        if(t._passengersWrongCounter != null)
+                            t._passengersWrongCounter.destroy(true)
+                        if(t._clockCounter != null)
+                            t._clockCounter.destroy(true)
                     
                         t.tweens.add({
                             targets: [ t._passengersRight, t._passengersWrong, t._exit, t._clock ],
@@ -202,7 +203,8 @@ var game = Phaser.Class({
                             t._passengersWrongCounter.text = parseInt(t._passengersWrongCounter.text) + 1
                     }
     
-                    t._passengers[t._currentPassenger].destroy(true)
+                    if(t._passengers[t._currentPassenger] != null)
+                        t._passengers[t._currentPassenger].destroy(true)
                     t._currentPassenger++
                     t._passengers[t._currentPassenger].show()
                     t._passengers[t._currentPassenger].getIn()
@@ -215,7 +217,8 @@ var game = Phaser.Class({
                 if(data)
                 {
                     t._bgm.stop()
-                    t.registry.destroy();
+                    if(t.registry != null)
+                        t.registry.destroy();
                     t.events.off();
 
                     eventsCenter.emit('stopGame', false, scene)
