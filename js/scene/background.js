@@ -95,8 +95,14 @@ var background = new Phaser.Class({
                             eventsCenter.emit('stopGame', true, t)
                             eventsCenter.emit('exit', false)
 
-                            location.reload();
+                            // location.reload();
                         }, 
+                    });
+
+                    t.tweens.add({
+                        targets: window._muteButton,
+                        y: -175,
+                        duration: 500
                     });
                 }
             }, this)

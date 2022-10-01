@@ -88,6 +88,15 @@ var mainMenu = new Phaser.Class({
                 }
             });
 
+            if(window._muteButton != null)
+            {
+                t.tweens.add({
+                    targets: window._muteButton,
+                    y: 75,
+                    duration: 500
+                });
+            }
+
             play.setInteractive();
 
             play.on('pointerdown', function (pointer) {

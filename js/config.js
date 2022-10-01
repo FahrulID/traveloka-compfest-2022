@@ -4,6 +4,7 @@ import {game} from './scene/game.js';
 import {background} from './scene/background.js';
 import {gameOver} from './scene/gameOver.js';
 import {gamePause} from './scene/gamePause.js';
+import {bgm} from './scene/bgm.js';
 
 var config = {
     type: Phaser.AUTO,
@@ -23,7 +24,7 @@ var config = {
         forceSetTimeOut: true
     },
     backgroundColor: '#000000',
-    scene: [ background, mainMenu, game, gamePause, gameOver ]
+    scene: [ background, mainMenu, bgm, game, gamePause, gameOver ]
 };
 
 export {config}; 

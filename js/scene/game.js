@@ -35,8 +35,6 @@ var game = Phaser.Class({
             this.load.image('exit', 'img/exit.png');
             this.load.image('clock', 'img/clock.png');
             this.load.image('scanner', 'img/scanner.png');
-
-            this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
         },
 
     create: 
@@ -50,12 +48,6 @@ var game = Phaser.Class({
             this._maxPassenger = maxPassenger;
             this._currentPassenger = 0
             this._passengers = []
-
-            this._bgm = this.sound.add("bgm")
-            this._bgm.loop = true
-
-            if(!window._mute)
-                this._bgm.play()
 
             this.started = false;
 
@@ -142,7 +134,7 @@ var game = Phaser.Class({
                 }, this)
                 
                 this.tweens.add({
-                    targets: [ this._passengersRight, this._passengersWrong, this._exit ],
+                    targets: [ this._passengersRight, this._passengersWrong, this._exit, window._muteButton ],
                     y: 75,
                     ease: Phaser.Math.Easing.Sine.in,
                     duration: 500,
@@ -216,7 +208,6 @@ var game = Phaser.Class({
             {
                 if(data)
                 {
-                    t._bgm.stop()
                     if(t.registry != null)
                         t.registry.destroy();
                     t.events.off();
@@ -224,6 +215,8 @@ var game = Phaser.Class({
                     eventsCenter.emit('stopGame', false, scene)
                 }
             }, this)
+
+            eventsCenter.emit('startGame', true, this)
         },
 
     update:

@@ -86,7 +86,8 @@ class Passenger extends Phaser.GameObjects.Sprite
             "Bagus",
             "Muhammad",
             "Ahmad",
-            "Andi"
+            "Andi",
+            "Edwin",
         ]
         const lastNameMale = [
             "Putra",
@@ -99,7 +100,8 @@ class Passenger extends Phaser.GameObjects.Sprite
             "Kurniawan",
             "Susanto",
             "Arifin",
-            "Widodo"
+            "Widodo",
+            "Mukhlason"
         ]
 
         const firstNameFemale = [
@@ -536,7 +538,7 @@ class Passenger extends Phaser.GameObjects.Sprite
             x: x,
             y: y,
             ease: Phaser.Math.Easing.Quadratic.InOut,
-            duration: 1500,
+            duration: 750,
             onComplete: () => {
                 t._scene.time.addEvent({ 
                     delay: 1000, 
@@ -546,7 +548,7 @@ class Passenger extends Phaser.GameObjects.Sprite
                             x: width/2,
                             y: height + 300,
                             ease: Phaser.Math.Easing.Quadratic.InOut,
-                            duration: 1000,
+                            duration: 500,
                             onComplete: () => {
                                 if(t._reject != null)
                                     t._reject.destroy(true)
