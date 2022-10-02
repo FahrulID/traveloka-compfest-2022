@@ -20,6 +20,9 @@ var bgm = new Phaser.Class({
             this.load.image('musicOff', 'musicOff.png');
             // this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
             this.load.audio('bgm', 'music.mp3');
+            this.load.audio('beep', 'Beep.mp3');
+            this.load.audio('hop', 'Hop.mp3');
+            this.load.audio('pageturn', 'Pageturn.mp3');
         },
 
     create: 
@@ -30,6 +33,33 @@ var bgm = new Phaser.Class({
             // BGM
             this._bgm = this.sound.add("bgm")
             this._bgm.loop = true
+            this._beep = this.sound.add("beep")
+            this._hop = this.sound.add("hop")
+            this._pageturn = this.sound.add("pageturn")
+
+            eventsCenter.on('beep', function(data)
+            {
+                if(data)
+                {    
+                    this._beep.play()
+                }
+            }, this)
+
+            eventsCenter.on('hop', function(data)
+            {
+                if(data)
+                {    
+                    this._hop.play()
+                }
+            }, this)
+
+            eventsCenter.on('pageturn', function(data)
+            {
+                if(data)
+                {    
+                    this._pageturn.play()
+                }
+            }, this)
 
             eventsCenter.on('startGame', function(data, scene)
             {
@@ -80,6 +110,7 @@ var bgm = new Phaser.Class({
             });
 
             this._mute.on('pointerup', function (pointer) {
+                eventsCenter.emit('hop', true)
                 t.tweens.add({
                     targets: t._mute,
                     scale: 1,

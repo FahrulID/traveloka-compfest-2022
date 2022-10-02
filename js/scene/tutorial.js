@@ -278,14 +278,13 @@ var tutorial = new Phaser.Class({
                             });
                 
                             t._next.on('pointerup', function (pointer) {
+                                eventsCenter.emit('hop', true)
                 
                                 t.tweens.add({
                                     targets: t._next,
                                     scale: 1,
                                     duration: 100
                                 });
-    
-                                console.log("next")
                                 
                                 if(t._canNext)
                                 {

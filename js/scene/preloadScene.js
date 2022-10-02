@@ -104,6 +104,9 @@ var preloadScene = new Phaser.Class({
             this.load.image('play', 'play.png');
             this.load.image('title', 'title.png');
             this.load.audio('bgm', 'music.mp3');
+            this.load.audio('beep', 'Beep.mp3');
+            this.load.audio('hop', 'Hop.mp3');
+            this.load.audio('pageturn', 'Pageturn.mp3');
             this.load.image('tutorial', 'tutorial.png');
             this.load.image('next', 'next.png');
 

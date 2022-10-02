@@ -80,6 +80,7 @@ var gamePause = Phaser.Class({
 
                 t.scene.stop()
 
+                eventsCenter.emit('hop', true)
                 eventsCenter.emit('goToMainMenu', true)
             });
 

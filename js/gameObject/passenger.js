@@ -303,6 +303,7 @@ class Passenger extends Phaser.GameObjects.Sprite
                     // t.identitySlideOut()
                 }
             });
+            eventsCenter.emit('pageturn', true)
         }
     }
 
@@ -320,6 +321,7 @@ class Passenger extends Phaser.GameObjects.Sprite
                     t._identity.destroy(true)
             }
         });
+        eventsCenter.emit('pageturn', true)
     }
 
     boardingPassSlideIn()
@@ -360,6 +362,7 @@ class Passenger extends Phaser.GameObjects.Sprite
                     // t.boardingPassSlideOut()
                 }
             });
+            eventsCenter.emit('pageturn', true)
         }
     }
 
@@ -377,6 +380,7 @@ class Passenger extends Phaser.GameObjects.Sprite
                     t._boardingPass.destroy(true)
             }
         });
+        eventsCenter.emit('pageturn', true)
     }
 
     createOverlay()
@@ -539,6 +543,7 @@ class Passenger extends Phaser.GameObjects.Sprite
             ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 750,
             onComplete: () => {
+                eventsCenter.emit('beep', true)
                 t._scene.time.addEvent({ 
                     delay: 1000, 
                     callback: function() {

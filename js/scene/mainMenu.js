@@ -122,6 +122,7 @@ var mainMenu = new Phaser.Class({
                 play.input.enabled = false;
                 play.setVisible(false);
                 
+                eventsCenter.emit('hop', true)
                 eventsCenter.emit('scroll-bg', true)
             });
         },

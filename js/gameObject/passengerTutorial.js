@@ -280,6 +280,7 @@ class PassengerTutorial extends Phaser.GameObjects.Sprite
                     // t.identitySlideOut()
                 }
             });
+            eventsCenter.emit('pageturn', true)
         }
     }
 
@@ -297,6 +298,7 @@ class PassengerTutorial extends Phaser.GameObjects.Sprite
                     t._identity.destroy(true)
             }
         });
+        eventsCenter.emit('pageturn', true)
     }
 
     boardingPassSlideIn()
@@ -324,6 +326,7 @@ class PassengerTutorial extends Phaser.GameObjects.Sprite
                     // t.boardingPassSlideOut()
                 }
             });
+            eventsCenter.emit('pageturn', true)
         }
     }
 
@@ -341,6 +344,7 @@ class PassengerTutorial extends Phaser.GameObjects.Sprite
                     t._boardingPass.destroy(true)
             }
         });
+        eventsCenter.emit('pageturn', true)
     }
 
     createOverlay()
