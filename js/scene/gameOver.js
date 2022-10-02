@@ -22,10 +22,11 @@ var gameOver = Phaser.Class({
     preload: 
         function ()
         {
-            this.load.image('gameOverBest', 'img/gameOverBest.png');
-            this.load.image('gameOverGood', 'img/gameOverGood.png');
-            this.load.image('gameOverBad', 'img/gameOverBad.png');
-            this.load.image('home', 'img/home.png');
+            this.load.setPath('img/');
+            this.load.image('gameOverBest', 'gameOverBest.png');
+            this.load.image('gameOverGood', 'gameOverGood.png');
+            this.load.image('gameOverBad', 'gameOverBad.png');
+            this.load.image('home', 'home.png');
         },
 
     create: 

@@ -9,14 +9,16 @@ var mainMenu = new Phaser.Class({
     initialize:
         function mainMenu ()
         {
-            Phaser.Scene.call(this, { key: 'mainMenu', active: true });
+            Phaser.Scene.call(this, { key: 'mainMenu', active: false });
         },
 
     preload: 
         function ()
         {
-            this.load.image('play', 'img/play.png');
-            this.load.image('title', 'img/title.png');
+            this.load.setPath('img/');
+            this.load.image('play', 'play.png');
+            this.load.image('tutorial', 'tutorial.png');
+            this.load.image('title', 'title.png');
         },
 
     create: 
@@ -29,7 +31,7 @@ var mainMenu = new Phaser.Class({
             const t = this;
             var title = this.add.image(width/2, -200, 'title');
             title.setScale(1.2)
-            var play = this.add.image(width/2, height + 180, 'play');
+            var play = this.add.image(width/2, height + 180, ((ls.get('tutorial') != null) ? 'play' : 'tutorial'));
 
             var highScoreRect = this.add.rectangle(0, height - 200, 0, 60, 0x000000, .5)
             highScoreRect.setOrigin(0, 0)
@@ -109,22 +111,17 @@ var mainMenu = new Phaser.Class({
         
             });
         
-            play.on('pointerout', function (pointer) {
+            play.on('pointerup', function (pointer) {
 
                 t.tweens.add({
                     targets: play,
                     scale: 1,
                     duration: 100
                 });
-        
-            });
-        
-            play.on('pointerup', function (pointer) {
-                this.clearTint();
 
                 play.input.enabled = false;
                 play.setVisible(false);
-
+                
                 eventsCenter.emit('scroll-bg', true)
             });
         },

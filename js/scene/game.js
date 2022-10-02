@@ -20,21 +20,23 @@ var game = Phaser.Class({
     preload: 
         function ()
         {
-            this.load.image('desk', 'img/desk.png');
-            this.load.image('girl', 'img/girl.png');
-            this.load.image('female', 'img/female.png');
-            this.load.image('grandma', 'img/grandma.png');
-            this.load.image('boy', 'img/boy.png');
-            this.load.image('male', 'img/male.png');
-            this.load.image('grandpa', 'img/grandpa.png');
-            this.load.image('identity', 'img/identity.png');
-            this.load.image('boardingpassleft', 'img/boardingPassLeft.png');
-            this.load.image('boardingpassright', 'img/boardingPassRight.png');
-            this.load.image('passengersRight', 'img/passengersRight.png');
-            this.load.image('passengersWrong', 'img/passengersWrong.png');
-            this.load.image('exit', 'img/exit.png');
-            this.load.image('clock', 'img/clock.png');
-            this.load.image('scanner', 'img/scanner.png');
+            this.load.setPath('img/');
+
+            this.load.image('desk', 'desk.png');
+            this.load.image('girl', 'girl.png');
+            this.load.image('female', 'female.png');
+            this.load.image('grandma', 'grandma.png');
+            this.load.image('boy', 'boy.png');
+            this.load.image('male', 'male.png');
+            this.load.image('grandpa', 'grandpa.png');
+            this.load.image('identity', 'identity.png');
+            this.load.image('boardingpassleft', 'boardingPassLeft.png');
+            this.load.image('boardingpassright', 'boardingPassRight.png');
+            this.load.image('passengersRight', 'passengersRight.png');
+            this.load.image('passengersWrong', 'passengersWrong.png');
+            this.load.image('exit', 'exit.png');
+            this.load.image('clock', 'clock.png');
+            this.load.image('scanner', 'scanner.png');
         },
 
     create: 
@@ -77,18 +79,15 @@ var game = Phaser.Class({
                     });
             
                 });
-            
-                this._exit.on('pointerout', function (pointer) {
+    
+                this._exit.on('pointerup', function (pointer) {
     
                     t.tweens.add({
                         targets: t._exit,
                         scale: 1,
                         duration: 100
                     });
-            
-                });
-    
-                this._exit.on('pointerup', function (pointer) {
+                    
                     t.scene.pause('game').launch('gamePause')
                 });
 

@@ -1,5 +1,6 @@
 import {width, height} from '../var.js';
-import eventsCenter from '../eventsCenter.js'
+import eventsCenter from '../eventsCenter.js';
+import {ls} from '../localStorage.js';
 
 var background = new Phaser.Class({
 
@@ -8,23 +9,23 @@ var background = new Phaser.Class({
     initialize:
         function mainMenu ()
         {
-            Phaser.Scene.call(this, { key: 'background', active: true });
+            Phaser.Scene.call(this, { key: 'background', active: false });
         },
 
     preload: 
         function ()
         {
-            this.load.image('sky', 'img/sky.png');
-            this.load.image('bg', 'img/bg.png');
-            this.load.image('awan1', 'img/awan1.png');
-            this.load.image('awan2', 'img/awan2.png');
-            this.load.image('awan3', 'img/awan3.png');
+            this.load.setPath('img/');
+            this.load.image('sky', 'sky.png');
+            this.load.image('bg', 'bg.png');
+            this.load.image('awan1', 'awan1.png');
+            this.load.image('awan2', 'awan2.png');
+            this.load.image('awan3', 'awan3.png');
         },
 
     create: 
         function ()
         {
-
             const t = this;
             this.awanDown = false
             this.awanUp = false
@@ -56,13 +57,18 @@ var background = new Phaser.Class({
                     });
 
                     t.scene.stop("mainMenu");
-                    t.scene.launch('game')
+
+                    if(ls.get('tutorial') != null)
+                        t.scene.launch('game')
+                    else
+                        t.scene.launch('tutorial')
 
                     t.time.addEvent({ 
                         delay: 2000, 
                         callback: function() {
                             t.awanDown = false
                             eventsCenter.emit('scroll-bg', false)
+                            ls.set('tutorial', true)
                         }, 
                     });
                 }
@@ -90,6 +96,7 @@ var background = new Phaser.Class({
                         delay: 2000, 
                         callback: function() {
                             t.awanUp = false
+                            t.scene.stop("tutorial");
                             t.scene.stop("game").launch('mainMenu');
                             scene.registry.destroy();
                             eventsCenter.emit('stopGame', true, t)

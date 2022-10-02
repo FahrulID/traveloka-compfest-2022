@@ -8,15 +8,18 @@ var bgm = new Phaser.Class({
     initialize:
         function mainMenu ()
         {
-            Phaser.Scene.call(this, { key: 'bgm', active: true });
+            Phaser.Scene.call(this, { key: 'bgm', active: false });
         },
 
     preload: 
         function ()
         {
-            this.load.image('musicOn', 'img/musicOn.png');
-            this.load.image('musicOff', 'img/musicOff.png');
-            this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
+            this.load.setPath('img/');
+
+            this.load.image('musicOn', 'musicOn.png');
+            this.load.image('musicOff', 'musicOff.png');
+            // this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
+            this.load.audio('bgm', 'music.mp3');
         },
 
     create: 
@@ -27,8 +30,6 @@ var bgm = new Phaser.Class({
             // BGM
             this._bgm = this.sound.add("bgm")
             this._bgm.loop = true
-            
-            console.log(this._bgm)
 
             eventsCenter.on('startGame', function(data, scene)
             {
@@ -71,24 +72,20 @@ var bgm = new Phaser.Class({
             this._mute.on('pointerdown', function (pointer) {
                 
                 t.tweens.add({
-                    targets: t._exit,
+                    targets: t._mute,
                     scale: .9,
-                    duration: 100
-                });
-        
-            });
-        
-            this._mute.on('pointerout', function (pointer) {
-
-                t.tweens.add({
-                    targets: t._exit,
-                    scale: 1,
                     duration: 100
                 });
         
             });
 
             this._mute.on('pointerup', function (pointer) {
+                t.tweens.add({
+                    targets: t._mute,
+                    scale: 1,
+                    duration: 100
+                });
+
                 if(!this._isMute)
                 {
                     t._mute.setTexture("musicOn")

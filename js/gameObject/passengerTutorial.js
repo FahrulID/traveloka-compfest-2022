@@ -1,7 +1,7 @@
 import {width, height} from '../var.js';
 import eventsCenter from '../eventsCenter.js'
 
-class Passenger extends Phaser.GameObjects.Sprite
+class PassengerTutorial extends Phaser.GameObjects.Sprite
 {
     _identityName;
     _boardingPassName;
@@ -229,21 +229,6 @@ class Passenger extends Phaser.GameObjects.Sprite
                 if(!t._scene._gameover)
                 {  
                     t._reject.setAlpha(1)
-                    t._reject.setInteractive()
-                    t._reject.on('pointerup', function (pointer) {
-                        t._reject.disableInteractive()
-                        t._reject.destroy(true)
-                        t.identitySlideOut()
-                        t.boardingPassSlideOut()
-
-                        
-                        t._scene.time.addEvent({ 
-                            delay: 200, 
-                            callback: function() {
-                                t.getOut()
-                            }, 
-                        });
-                    });
                 }
             }
         });
@@ -284,14 +269,6 @@ class Passenger extends Phaser.GameObjects.Sprite
             identityCard.setScale(.15)
 
             this._identity.add([bg, avatar, identityCard])
-
-            identityCard.setInteractive();
-        
-            identityCard.on('pointerup', function (pointer) {
-                this.clearTint();
-                if(t._identityModal == null)
-                    t.showIdentityModal()
-            });
             
             this._scene.tweens.add({
                 targets: t._identity,
@@ -336,19 +313,6 @@ class Passenger extends Phaser.GameObjects.Sprite
             boardingpassright.setScale(.1)
 
             this._boardingPass.add([boardingpassleft, boardingpassright])
-
-            boardingpassleft.setInteractive();
-            boardingpassright.setInteractive();
-        
-            boardingpassleft.on('pointerup', function (pointer) {
-                if(t._boardingPassModal == null)
-                    t.showBoardingPassModal()
-            });
-        
-            boardingpassright.on('pointerup', function (pointer) {
-                if(t._boardingPassModal == null)
-                    t.showBoardingPassModal()
-            });
             
             this._scene.tweens.add({
                 targets: t._boardingPass,
@@ -382,7 +346,6 @@ class Passenger extends Phaser.GameObjects.Sprite
     createOverlay()
     {
         this._overlay = this._scene.add.rectangle(width/2, height/2, width, height, 0x000000, .7)
-        this._overlay.setInteractive()
     }
 
     destroyOverlay()
@@ -415,12 +378,7 @@ class Passenger extends Phaser.GameObjects.Sprite
             scaleY: { value: 2, ease: 'Quad.easeInOut' },
             duration: 200,
             onComplete: () => {
-                let name = this._scene.add.text(370, height/2 - 50, this._identityName, { font: '40px roboto, sans-serif', align: 'left'});
-                t._scene.input.on('pointerdown', () =>
-                {
-                    name.destroy(true)
-                    t.hideIdentityModal()
-                })
+                t._identityNamePassenger = this._scene.add.text(370, height/2 - 50, this._identityName, { font: '40px roboto, sans-serif', align: 'left'});
             }
         });
     }
@@ -436,6 +394,7 @@ class Passenger extends Phaser.GameObjects.Sprite
             onComplete: () => {
                 if(t._identityModal != null)
                     t._identityModal.destroy(true)
+                t._identityNamePassenger.destroy(true)
                 t._identityModal = null
                 t._scene.input.off('pointerdown')
                 t.destroyOverlay()
@@ -451,26 +410,9 @@ class Passenger extends Phaser.GameObjects.Sprite
         t.boardingScan = this._scene.add.rectangle(150, height/2 + 70, 250, 50, 0xffffff)
         t.boardingScan2 = this._scene.add.rectangle(width - 130, height/2 + 70, 200, 50, 0xffffff)
         t.boardingScan.setAlpha(0);
-
-        t.boardingScan.on('pointerup', () =>
-        {
-            t.boardingScan.disableInteractive()
-            t.boardingScan2.disableInteractive()
-            t.scan(225, height/2 + 150)
-        })
         t.boardingScan2.setAlpha(0);
-
-        t.boardingScan2.on('pointerup', () =>
-        {
-            t.boardingScan.disableInteractive()
-            t.boardingScan2.disableInteractive()
-            t.scan(width - 70, height/2 + 150)
-        })
         
         this._boardingPassModal = this._scene.add.container(width/2, height/2)
-
-        t.boardingScan.setInteractive()
-        t.boardingScan2.setInteractive()
 
         let boardingpassleft = this._scene.add.sprite(325 - width/2, 0, "boardingpassleft")
         let boardingpassright = this._scene.add.sprite(width - 260 - width/2, 0, "boardingpassright")
@@ -490,11 +432,6 @@ class Passenger extends Phaser.GameObjects.Sprite
                 t.boardingScan2.setAlpha(1);
                 t.firstname = this._scene.add.text(50, height/2 - 50, this._boardingPassName.split(' ')[0], { font: '40px roboto, sans-serif', align: 'left', color: '#3f3f4e'});
                 t.lastname = this._scene.add.text(50, height/2, this._boardingPassName.split(' ')[1], { font: '40px roboto, sans-serif', align: 'left', color: '#3f3f4e'});
-                t._overlay.on('pointerdown', () =>
-                {
-                    if(!t._scanning)
-                    t.hideBoardingPassModal()
-                })
             }
         });
     }
@@ -590,4 +527,4 @@ class Passenger extends Phaser.GameObjects.Sprite
     }
 }
 
-export default Passenger;
+export default PassengerTutorial;

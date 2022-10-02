@@ -5,6 +5,8 @@ import {background} from './scene/background.js';
 import {gameOver} from './scene/gameOver.js';
 import {gamePause} from './scene/gamePause.js';
 import {bgm} from './scene/bgm.js';
+import {preloadScene} from './scene/preloadScene.js';
+import {tutorial} from './scene/tutorial.js';
 
 var config = {
     type: Phaser.AUTO,
@@ -24,7 +26,7 @@ var config = {
         forceSetTimeOut: true
     },
     backgroundColor: '#000000',
-    scene: [ background, mainMenu, bgm, game, gamePause, gameOver ]
+    scene: [ preloadScene, background, mainMenu, bgm, game, tutorial, gamePause, gameOver ]
 };
 
 export {config}; 
