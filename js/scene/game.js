@@ -20,7 +20,7 @@ var game = Phaser.Class({
     preload: 
         function ()
         {
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
 
             this.load.image('desk', 'desk.png');
             this.load.image('girl', 'girl.png');

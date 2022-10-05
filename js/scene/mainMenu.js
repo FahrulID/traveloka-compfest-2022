@@ -15,10 +15,11 @@ var mainMenu = new Phaser.Class({
     preload: 
         function ()
         {
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
             this.load.image('play', 'play.png');
             this.load.image('tutorial', 'tutorial.png');
             this.load.image('title', 'title.png');
+            this.load.image('creditButton', 'credit.png');
         },
 
     create: 
@@ -124,6 +125,49 @@ var mainMenu = new Phaser.Class({
                 
                 eventsCenter.emit('hop', true)
                 eventsCenter.emit('scroll-bg', true)
+            });
+
+            // Credit
+            var credit = this.add.image(width - 75, -175, 'creditButton');
+
+            credit.on('pointerdown', function (pointer) {
+                
+                t.tweens.add({
+                    targets: credit,
+                    scale: .9,
+                    duration: 100
+                });
+        
+            });
+        
+            credit.on('pointerout', function (pointer) {
+
+                t.tweens.add({
+                    targets: credit,
+                    scale: 1,
+                    duration: 100
+                });
+        
+            });
+        
+            credit.on('pointerup', function (pointer) {
+                this.clearTint();
+
+                t.scene.launch('credit')
+
+                eventsCenter.emit('hop', true)
+            });
+
+            credit.setInteractive()
+
+            this.tweens.add({
+                targets: credit,
+                y: 75,
+                duration: 500,
+                ease: Phaser.Math.Easing.Sine.in,
+                onComplete: () => {
+
+                }
             });
         },
     

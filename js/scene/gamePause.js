@@ -21,7 +21,7 @@ var gamePause = Phaser.Class({
     preload: 
         function ()
         {
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
             this.load.image('gamePause', 'gamePause.png');
             this.load.image('home', 'home.png');
         },

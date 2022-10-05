@@ -72,7 +72,7 @@ var preloadScene = new Phaser.Class({
                 assetText.destroy();
             });
             
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
 
             this.load.image('desk', 'desk.png');
             this.load.image('girl', 'girl.png');
@@ -123,6 +123,9 @@ var preloadScene = new Phaser.Class({
             this.load.image('overlayTimer', 'overlayTimer.png');
             this.load.image('overlayNPC', 'overlayNPC.png');
             this.load.image('overlayReject', 'overlayReject.png');
+
+            this.load.image('creditButton', 'credit.png');
+            this.load.image('credit', 'license.png');
         },
 
     create: 

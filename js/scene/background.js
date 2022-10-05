@@ -15,7 +15,7 @@ var background = new Phaser.Class({
     preload: 
         function ()
         {
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
             this.load.image('sky', 'sky.png');
             this.load.image('bg', 'bg.png');
             this.load.image('awan1', 'awan1.png');

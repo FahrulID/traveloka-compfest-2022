@@ -14,11 +14,11 @@ var bgm = new Phaser.Class({
     preload: 
         function ()
         {
-            this.load.setPath('img/');
+            this.load.setPath('assets/');
 
             this.load.image('musicOn', 'musicOn.png');
             this.load.image('musicOff', 'musicOff.png');
-            // this.load.audio('bgm', ['img/music.mp3', 'img/music.ogg']);
+            // this.load.audio('bgm', ['assets/music.mp3', 'assets/music.ogg']);
             this.load.audio('bgm', 'music.mp3');
             this.load.audio('beep', 'Beep.mp3');
             this.load.audio('hop', 'Hop.mp3');
