@@ -109,6 +109,16 @@ var bgm = new Phaser.Class({
         
             });
 
+            this._mute.on('pointerout', function (pointer) {
+                
+                t.tweens.add({
+                    targets: t._mute,
+                    scale: 1,
+                    duration: 100
+                });
+        
+            });
+
             this._mute.on('pointerup', function (pointer) {
                 eventsCenter.emit('hop', true)
                 t.tweens.add({
@@ -129,6 +139,11 @@ var bgm = new Phaser.Class({
                     window.mute = false
                     t._bgm.mute = false
                 }
+                    
+                if(!t._bgm.isPlaying && !t._isMute) {
+                    t._bgm.play()
+                }
+
                 this._isMute = !this._isMute
             });
 

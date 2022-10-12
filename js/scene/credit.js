@@ -1,5 +1,3 @@
-
-import eventsCenter from '../eventsCenter.js'
 import {width, height} from '../var.js';
 
 var credit = Phaser.Class({

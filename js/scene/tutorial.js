@@ -96,6 +96,16 @@ var tutorial = new Phaser.Class({
             
                 });
     
+                t._exit.on('pointerout', function (pointer) {
+                    
+                    t.tweens.add({
+                        targets: t._exit,
+                        scale: 1,
+                        duration: 100
+                    });
+            
+                });
+    
                 t._exit.on('pointerup', function (pointer) {
     
                     t.tweens.add({
@@ -272,6 +282,16 @@ var tutorial = new Phaser.Class({
                                 t.tweens.add({
                                     targets: t._next,
                                     scale: .9,
+                                    duration: 100
+                                });
+                        
+                            });
+            
+                            t._next.on('pointerout', function (pointer) {
+                                
+                                t.tweens.add({
+                                    targets: t._next,
+                                    scale: 1,
                                     duration: 100
                                 });
                         

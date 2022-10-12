@@ -73,6 +73,16 @@ var gameOver = Phaser.Class({
                 });
         
             });
+            
+            home.on('pointerout', function (pointer) {
+                
+                t.tweens.add({
+                    targets: home,
+                    scale: 1,
+                    duration: 100
+                });
+        
+            });
         
             home.on('pointerout', function (pointer) {
 

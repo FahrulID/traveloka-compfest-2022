@@ -37,6 +37,11 @@ var game = Phaser.Class({
             this.load.image('exit', 'exit.png');
             this.load.image('clock', 'clock.png');
             this.load.image('scanner', 'scanner.png');
+            
+            this.load.image('sheet', 'sheet.png');
+            this.load.image('gateMonasButton', 'gateMonasButton.png');
+            this.load.image('gateGadangButton', 'gateGadangButton.png');
+            this.load.image('gatePuraButton', 'gatePuraButton.png');
         },
 
     create: 
@@ -50,6 +55,10 @@ var game = Phaser.Class({
             this._maxPassenger = maxPassenger;
             this._currentPassenger = 0
             this._passengers = []
+
+
+            let gates = ["gateMonas", "gateGadang", "gatePura"]
+            window.gate = gates.sort(() => (Math.random() > .5) ? 1 : -1); // Shuffle gates
 
             this.started = false;
 
@@ -68,13 +77,25 @@ var game = Phaser.Class({
                 this._passengersRight = this.add.sprite(125, -175, "passengersRight")
                 this._passengersWrong = this.add.sprite(375, -175, "passengersWrong")
                 this._exit = this.add.sprite(width - 75, -175, "exit")
+                this._sheet = this.add.sprite(width + 175, 235, "sheet")
                 this._exit.setInteractive()
+                this._sheet.setInteractive()
 
                 this._exit.on('pointerdown', function (pointer) {
                     
                     t.tweens.add({
                         targets: t._exit,
                         scale: .9,
+                        duration: 100
+                    });
+            
+                });
+
+                this._exit.on('pointerout', function (pointer) {
+                    
+                    t.tweens.add({
+                        targets: t._exit,
+                        scale: 1,
                         duration: 100
                     });
             
@@ -89,6 +110,37 @@ var game = Phaser.Class({
                     });
                     
                     t.scene.pause('game').launch('gamePause')
+                });
+
+                this._sheet.on('pointerdown', function (pointer) {
+                    
+                    t.tweens.add({
+                        targets: t._sheet,
+                        scale: .9,
+                        duration: 100
+                    });
+            
+                });
+
+                this._sheet.on('pointerout', function (pointer) {
+                    
+                    t.tweens.add({
+                        targets: t._sheet,
+                        scale: 1,
+                        duration: 100
+                    });
+            
+                });
+    
+                this._sheet.on('pointerup', function (pointer) {
+    
+                    t.tweens.add({
+                        targets: t._sheet,
+                        scale: 1,
+                        duration: 100
+                    });
+                    
+                    t.scene.launch('gateSheet')
                 });
 
                 eventsCenter.on('goToMainMenu', function(data)
@@ -145,6 +197,16 @@ var game = Phaser.Class({
 
                         Phaser.Display.Align.In.Center(t._passengersRightCounter, t._passengersRight);
                         Phaser.Display.Align.In.Center(t._passengersWrongCounter, t._passengersWrong);
+                    }
+                });
+                
+                this.tweens.add({
+                    targets: this._sheet,
+                    x: width - 95,
+                    ease: Phaser.Math.Easing.Sine.in,
+                    duration: 500,
+                    onComplete: () => {
+
                     }
                 });
                 

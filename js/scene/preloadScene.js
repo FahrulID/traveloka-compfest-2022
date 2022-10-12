@@ -1,6 +1,3 @@
-import {width, height} from '../var.js';
-import eventsCenter from '../eventsCenter.js'
-
 var preloadScene = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -126,6 +123,13 @@ var preloadScene = new Phaser.Class({
 
             this.load.image('creditButton', 'credit.png');
             this.load.image('credit', 'license.png');
+
+            this.load.image('sheet', 'sheet.png');
+
+            this.load.image('gatePura', 'gatePura.png');
+            this.load.image('gateMonas', 'gateMonas.png');
+            this.load.image('gateGadang', 'gateGadang.png');
+            this.load.image('gateSheet', 'gateSheet.png');
         },
 
     create: 

@@ -111,6 +111,16 @@ var mainMenu = new Phaser.Class({
                 });
         
             });
+
+            play.on('pointerout', function (pointer) {
+                
+                t.tweens.add({
+                    targets: play,
+                    scale: 1,
+                    duration: 100
+                });
+        
+            });
         
             play.on('pointerup', function (pointer) {
 
@@ -135,6 +145,16 @@ var mainMenu = new Phaser.Class({
                 t.tweens.add({
                     targets: credit,
                     scale: .9,
+                    duration: 100
+                });
+        
+            });
+
+            credit.on('pointerout', function (pointer) {
+                
+                t.tweens.add({
+                    targets: credit,
+                    scale: 1,
                     duration: 100
                 });
         

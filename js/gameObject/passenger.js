@@ -11,6 +11,8 @@ class Passenger extends Phaser.GameObjects.Sprite
 
     _destination;
 
+    _gate
+
     // Parent scene
     _scene;
 
@@ -60,6 +62,8 @@ class Passenger extends Phaser.GameObjects.Sprite
             if(this._boardingPassAnim != null)
                 this._boardingPassAnim.stop()
         }, this)
+
+        this._gate = Math.floor(Math.random() * 3) + 1
 	}
 
     randomizePassenger()
@@ -479,10 +483,12 @@ class Passenger extends Phaser.GameObjects.Sprite
         let boardingpassleft = this._scene.add.sprite(325 - width/2, 0, "boardingpassleft")
         let boardingpassright = this._scene.add.sprite(width - 260 - width/2, 0, "boardingpassright")
 
+        let gate = this._scene.add.text(-12, 22, this._gate, { font: '20px roboto, sans-serif', align: 'center', color: "black"})
+
         boardingpassleft.setScale(.24) // .48 from 200dpi to 96dpi, .28 from .48/2
         boardingpassright.setScale(.24)
 
-        this._boardingPassModal.add([boardingpassleft, boardingpassright])
+        this._boardingPassModal.add([boardingpassleft, boardingpassright, gate])
         
         this._scene.tweens.add({
             targets: t._boardingPassModal, 
@@ -514,15 +520,149 @@ class Passenger extends Phaser.GameObjects.Sprite
             t.boardingScan.destroy(true)
         if(t.boardingScan2 != null)
             t.boardingScan2.destroy(true)
-        this._boardingPassAnim = this._scene.tweens.add({
-            targets: t._boardingPassModal,
+        if(t._boardingPassAnim != null)
+            this._boardingPassAnim = this._scene.tweens.add({
+                targets: t._boardingPassModal,
+                scale: 1,
+                ease: Phaser.Math.Easing.Quadratic.InOut,
+                duration: 200,
+                onComplete: () => {
+                    if(t._boardingPassModal != null)
+                        t._boardingPassModal.destroy(true)
+                    t._boardingPassModal = null
+                    t._scene.input.off('pointerdown')
+                    t.destroyOverlay()
+                }
+            });
+    }
+
+    showGate()
+    {
+        const t = this
+        this.createOverlay()
+
+        this._gateButton = this._scene.add.container(0, 0)
+        let gateMonasButton = this._scene.add.sprite( width/2, height/4, 'gateMonasButton')
+        let gateGadangButton = this._scene.add.sprite( width/2, height/4 * 2, 'gateGadangButton')
+        let gatePuraButton = this._scene.add.sprite( width/2, height/4 * 3, 'gatePuraButton')
+        gateMonasButton.setInteractive()
+        gateGadangButton.setInteractive()
+        gatePuraButton.setInteractive()
+
+        this._gateButton.add([gateGadangButton, gateMonasButton, gatePuraButton])
+
+        
+
+        gateMonasButton.on('pointerdown', function (pointer) {
+                
+            t._scene.tweens.add({
+                targets: gateMonasButton,
+                scale: .9,
+                duration: 100
+            });
+    
+        });
+
+        gateMonasButton.on('pointerout', function (pointer) {
+            
+            t._scene.tweens.add({
+                targets: gateMonasButton,
+                scale: 1,
+                duration: 100
+            });
+    
+        });
+    
+        gateMonasButton.on('pointerup', function (pointer) {
+
+            t._scene.tweens.add({
+                targets: gateMonasButton,
+                scale: 1,
+                duration: 100
+            });
+        });
+
+        
+
+        gateGadangButton.on('pointerdown', function (pointer) {
+                
+            t._scene.tweens.add({
+                targets: gateGadangButton,
+                scale: .9,
+                duration: 100
+            });
+    
+        });
+
+        gateGadangButton.on('pointerout', function (pointer) {
+            
+            t._scene.tweens.add({
+                targets: gateGadangButton,
+                scale: 1,
+                duration: 100
+            });
+    
+        });
+    
+        gateGadangButton.on('pointerup', function (pointer) {
+
+            t._scene.tweens.add({
+                targets: gateGadangButton,
+                scale: 1,
+                duration: 100
+            });
+        });
+
+        
+
+        gatePuraButton.on('pointerdown', function (pointer) {
+                
+            t._scene.tweens.add({
+                targets: gatePuraButton,
+                scale: .9,
+                duration: 100
+            });
+    
+        });
+
+        gatePuraButton.on('pointerout', function (pointer) {
+            
+            t._scene.tweens.add({
+                targets: gatePuraButton,
+                scale: 1,
+                duration: 100
+            });
+    
+        });
+    
+        gatePuraButton.on('pointerup', function (pointer) {
+
+            t._scene.tweens.add({
+                targets: gatePuraButton,
+                scale: 1,
+                duration: 100
+            });
+        });
+
+        this._overlay.setInteractive()
+        t._overlay.on('pointerdown', () =>
+        {
+            t.hideGate()
+        })
+    }
+
+    hideGate()
+    {
+        const t = this
+        this._scene.tweens.add({
+            targets: t._gateButton,
             scale: 1,
             ease: Phaser.Math.Easing.Quadratic.InOut,
             duration: 200,
             onComplete: () => {
-                if(t._boardingPassModal != null)
-                    t._boardingPassModal.destroy(true)
-                t._boardingPassModal = null
+                if(t._gateButton != null)
+                    t._gateButton.destroy(true)
+                t._gateButton = null
                 t._scene.input.off('pointerdown')
                 t.destroyOverlay()
             }
@@ -558,7 +698,8 @@ class Passenger extends Phaser.GameObjects.Sprite
                                 if(t._reject != null)
                                     t._reject.destroy(true)
                                 t.hideBoardingPassModal()
-                                t.accepted()
+                                t.showGate()
+                                // t.accepted()
                             }
                         });
                     }, 
